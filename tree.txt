@@ -1,0 +1,21 @@
+c:/Users/Debjyoti/Desktop/my_projects/voice_classification/
+├── data/
+│   ├── audio_features_with_errors.csv
+│   └── predictvoice.csv
+├── models/
+├── new_voice_input.py
+├── predict_voice_input.py
+├── test_data_extract.py
+├── train.py
+├── train_data_extract.py
+└── voice_samples/
+    ├── Actor_01/
+    │   
+    ├── avra/
+    │   
+    ├── debjyoti/
+    │   
+    ├── indrajit/
+    │   
+    └── milan/
+        
