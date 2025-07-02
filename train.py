@@ -46,6 +46,6 @@ class VoiceTrainer:
         
 
 if __name__ == "__main__":
-    Label_to_train = "debjyoti"
+    Label_to_train = "deb"
     trainer = VoiceTrainer(df)
     trainer.run(Label_to_train)

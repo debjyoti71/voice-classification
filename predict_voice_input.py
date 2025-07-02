@@ -44,7 +44,7 @@ class VoiceAuthenticator:
             except (sr.UnknownValueError, sr.RequestError):
                 return None
 
-    def process_new_input(self):
+    def process_new_input(self,label_to_predict):
         self.record_audio()
         transcribed_text = self.convert_audio_to_text()
         if transcribed_text:
@@ -61,7 +61,7 @@ class VoiceAuthenticator:
                 df.to_csv("audio_features_for_predict.csv", index=False)
                 print("📁 Features saved to 'audio_features_for_predict.csv'")
                 predictor = VoicePredict(df)
-                label_to_predict = "debjyoti"
+                # label_to_predict = label_to_predict  # Replace with the actual label you want to predict
                 predicted_df = predictor.predict(label_to_predict)
             else:
                 print("❌ Sentence mismatch. Please try again.")
@@ -74,4 +74,6 @@ class VoiceAuthenticator:
 # Example usage: 
 if __name__ == "__main__":
     va = VoiceAuthenticator()
-    va.process_new_input()
+    deb_label_to_predict = "deb"  # Replace with the actual label you want to predict
+    va.process_new_input(deb_label_to_predict)
+

@@ -75,7 +75,7 @@ class VoiceSampleCollector:
             features = extractor.process_all_conditions()
             self.all_features.extend(features)
 
-    def save_to_csv(self, csv_file="audio_features_with_errors.csv"):
+    def save_to_csv(self, csv_file="data/audio_features_with_errors.csv"):
         new_df = pd.DataFrame(self.all_features)
 
         if os.path.exists(csv_file):
