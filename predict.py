@@ -32,7 +32,15 @@ class VoicePredict:
 
         print("\n🔍 Prediction Results with Confidence:")
         print(self.df[['Predicted_Label', 'Confidence']])
+
+         # 👉 Get the label with highest average confidence
+        summary = self.df.groupby('Predicted_Label')['Confidence'].mean()
+        top_label = summary.idxmax()
+        top_conf = summary.max()
+
+        print(f"\n🎉 Welcome, {top_label.capitalize()}! (Avg confidence: {top_conf:.2f})")
         return self.df
+    
 
 
 # Usage Example

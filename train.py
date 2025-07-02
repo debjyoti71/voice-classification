@@ -7,11 +7,10 @@ import os
 
 csv_path = 'data/audio_features_with_errors.csv'
 df = pd.read_csv(csv_path)
-print("Original Data:")
-print(df.head(5))
 
 
 class VoiceTrainer:
+    print("🔧 Voice Trainer Initialized")
     def __init__(self, dataframe):
         self.df = dataframe
 

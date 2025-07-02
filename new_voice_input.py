@@ -12,6 +12,7 @@ SPLIT_SENTENCES = [
 ]
 
 class VoiceSampleCollector:
+    print("🔊 Voice Sample Collector Initialized")
     def __init__(self, name):
         self.name = name.strip().lower()
         self.user_dir = os.path.join(VOICE_DATA_DIR, self.name)

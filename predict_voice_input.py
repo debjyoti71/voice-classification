@@ -7,6 +7,7 @@ from test_data_extract import AudioFeatureExtractor
 from predict import VoicePredict
 
 class VoiceAuthenticator:
+    print("🔒 Voice Authenticator Initialized")
     def __init__(self, sentence="open the door", file_path="predictvoice.wav", duration=5, rate=22050, channels=1):
         self.sentence = sentence.lower()
         self.file_path = file_path
