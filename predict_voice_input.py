@@ -59,7 +59,7 @@ class VoiceAuthenticator:
 
                 # Save extracted features
                 df = pd.DataFrame(feature)
-                df.to_csv("audio_features_for_predict.csv", index=False)
+                df.to_csv("data/audio_features_for_predict.csv", index=False)
                 print("📁 Features saved to 'audio_features_for_predict.csv'")
                 predictor = VoicePredict(df)
                 # label_to_predict = label_to_predict  # Replace with the actual label you want to predict
