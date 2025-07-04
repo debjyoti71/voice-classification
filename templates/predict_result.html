@@ -1,23 +1,260 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Prediction Result</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .result-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-item p {
+            font-size: 1.1em;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        .result-item strong {
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .confidence-bar {
+            width: 100%;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .confidence-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #10b981, #34d399);
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+        }
+
+        .match-success {
+            background: rgba(16, 185, 129, 0.2);
+            border: 2px solid #10b981;
+            color: #10b981;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .match-failure {
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid #ef4444;
+            color: #ef4444;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .error-message {
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid #ef4444;
+            color: #ef4444;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            font-size: 1.1em;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            background: linear-gradient(45deg, #5a67d8, #6b46c1);
+        }
+
+        .wave-animation {
+            display: inline-block;
+            animation: wave 2s infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        .username-highlight {
+            color: #ffd700;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        @media (max-width: 500px) {
+            h2 {
+                font-size: 1.8em;
+            }
+
+            .result-item p, .match-success, .match-failure {
+                font-size: 1em;
+            }
+
+            .container {
+                padding: 25px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h2>🔍 Prediction for {{ username }}</h2>
-
-    {% if result %}
-        <p>{{ result }}</p>
-    {% else %}
-        <p><strong>Predicted Label:</strong> {{ predicted_label }}</p>
-        <p><strong>Confidence:</strong> {{ confidence }}%</p>
-        {% if match %}
-            <p style="color:green;">✅ Match confirmed!</p>
+    <div class="container">
+        <h2>🔍 Prediction for <span class="username-highlight">{{ username }}</span> <span class="wave-animation">🎯</span></h2>
+        
+        {% if result %}
+            <!-- Error case -->
+            <div class="error-message">
+                <p>{{ result }}</p>
+            </div>
         {% else %}
-            <p style="color:red;">❌ Voice doesn't match the username!</p>
-        {% endif %}
-    {% endif %}
+            {% if sentence_matched %}
+                <!-- Success case with prediction details -->
+                <div class="result-card">
+                    <div class="result-item">
+                        <p><strong>Predicted Label:</strong> {{ predicted_label }}</p>
+                    </div>
+                    
+                    <div class="result-item">
+                        <p><strong>Confidence Level:</strong> {{ confidence }}%</p>
+                        <div class="confidence-bar">
+                            <div class="confidence-fill" style="width: {{ confidence }}%"></div>
+                        </div>
+                    </div>
+                </div>
 
-    <a href="/">🔙 Try Again</a>
+                {% if match %}
+                    <div class="match-success pulse-animation">
+                        ✅ Voice Authentication Successful!
+                        <br>
+                        <small style="font-size: 0.9em; opacity: 0.9;">Welcome back, {{ username }}!</small>
+                    </div>
+                {% else %}
+                    <div class="match-failure pulse-animation">
+                        ❌ Voice Authentication Failed
+                        <br>
+                        <small style="font-size: 0.9em; opacity: 0.9;">Voice doesn't match the registered user</small>
+                    </div>
+                {% endif %}
+            {% else %}
+                <div class="match-failure pulse-animation">
+                    ❌ Voice Authentication Failed
+                    <br>
+                    <small style="font-size: 0.9em; opacity: 0.9;">Sentence mismatch. Please try again.</small>
+                </div>
+            {% endif %}
+        {% endif %}
+        
+        <a href="/" class="back-button">🔙 Try Again</a>
+    </div>
+
+    <script>
+        // Animate confidence bar on page load
+        window.addEventListener('load', function() {
+            const confidenceFill = document.querySelector('.confidence-fill');
+            if (confidenceFill) {
+                const targetWidth = confidenceFill.style.width;
+                confidenceFill.style.width = '0%';
+                setTimeout(() => {
+                    confidenceFill.style.width = targetWidth;
+                }, 500);
+            }
+        });
+
+        // Hover interaction for animation cards
+        document.addEventListener('DOMContentLoaded', function() {
+            const matchElements = document.querySelectorAll('.match-success, .match-failure');
+            matchElements.forEach(element => {
+                element.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.02)';
+                });
+                element.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+        });
+    </script>
 </body>
 </html>

@@ -94,7 +94,7 @@ def predict_result(username):
     sentence = "hello world"
     try:
         predictor = VoicePredict(df, sentence)
-        result_df = predictor.predict(username)
+        result_df,sentence_matched = predictor.predict(username)
     except Exception as e:
         print(f"❌ Prediction failed: {e}")
         return f"❌ Prediction failed: {e}", 500
@@ -116,7 +116,8 @@ def predict_result(username):
         username=username,
         predicted_label=top_label,
         confidence=round(top_conf * 100, 2),
-        match=match
+        match=match,
+        sentence_matched=sentence_matched,
     )
 
 

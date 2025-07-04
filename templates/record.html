@@ -1,172 +1,414 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>🎤 Record Your Voice</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f4f6;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-    .card {
-      background: #fff;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-    }
-    button {
-      padding: 10px 20px;
-      margin: 10px;
-      font-size: 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    .start { background-color: #10b981; color: white; }
-    .stop { background-color: #ef4444; color: white; }
-    .status {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #333;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎤 Record Your Voice</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .user-info p {
+            font-size: 1.2em;
+            margin: 0;
+        }
+
+        .user-info strong {
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .recording-controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        button {
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: 600;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            min-width: 140px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .start {
+            background: linear-gradient(45deg, #10b981, #059669);
+            color: white;
+        }
+
+        .stop {
+            background: linear-gradient(45deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .status {
+            padding: 15px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .recording-indicator {
+            display: none;
+            background: rgba(239, 68, 68, 0.2);
+            border: 2px solid #ef4444;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .recording-indicator.active {
+            display: block;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.02); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .wave-animation {
+            display: inline-block;
+            animation: wave 2s infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .audio-visualizer {
+            display: none;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 20px 0;
+            padding: 10px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .audio-visualizer.active {
+            display: flex;
+        }
+
+        .audio-bars {
+            display: flex;
+            gap: 3px;
+            align-items: end;
+            height: 40px;
+        }
+
+        .audio-bar {
+            width: 4px;
+            background: linear-gradient(to top, #10b981, #34d399);
+            border-radius: 2px;
+            animation: audioWave 1s infinite ease-in-out;
+        }
+
+        .audio-bar:nth-child(2) { animation-delay: 0.1s; }
+        .audio-bar:nth-child(3) { animation-delay: 0.2s; }
+        .audio-bar:nth-child(4) { animation-delay: 0.3s; }
+        .audio-bar:nth-child(5) { animation-delay: 0.4s; }
+        .audio-bar:nth-child(6) { animation-delay: 0.5s; }
+        .audio-bar:nth-child(7) { animation-delay: 0.6s; }
+        .audio-bar:nth-child(8) { animation-delay: 0.7s; }
+
+        @keyframes audioWave {
+            0%, 100% { height: 10px; }
+            50% { height: 35px; }
+        }
+
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+            line-height: 1.5;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .instructions h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .instructions ul {
+            list-style: none;
+            text-align: left;
+        }
+
+        .instructions li {
+            margin: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .instructions li:before {
+            content: "🎤";
+            position: absolute;
+            left: 0;
+        }
+    </style>
 </head>
 <body>
-  <div class="card">
-    <h2>🎤 Record Your Voice</h2>
-    <p>User: <strong id="username">{{ username }}</strong></p>
-    <button id="startBtn" class="start" onclick="startRecording()">🔴 Start</button>
-    <button id="stopBtn" class="stop" onclick="stopRecording()" disabled>⏹️ Stop & Upload</button>
-    <p id="status" class="status"></p>
-  </div>
+    <div class="container">
+        <h2>🎤 Record Your Voice <span class="wave-animation">🎙️</span></h2>
+        
+        <div class="user-info">
+            <p>User: <strong id="username">{{ username }}</strong></p>
+        </div>
 
-  <script>
-    let mediaRecorder;
-    let audioChunks = [];
-    let audioContext;
-    let stream;
+        <div class="recording-indicator" id="recordingIndicator">
+            <strong>🔴 RECORDING IN PROGRESS</strong>
+            <br>
+            <small>Speak clearly into your microphone</small>
+        </div>
 
-    const username = document.getElementById('username').textContent;
+        <div class="audio-visualizer" id="audioVisualizer">
+            <div class="audio-bars">
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+                <div class="audio-bar"></div>
+            </div>
+        </div>
 
-    function audioBufferToWav(buffer) {
-      const numChannels = buffer.numberOfChannels;
-      const sampleRate = buffer.sampleRate;
-      const samples = buffer.getChannelData(0).length;
-      const bytesPerSample = 2;
-      const blockAlign = numChannels * bytesPerSample;
-      const byteRate = sampleRate * blockAlign;
-      const byteLength = samples * blockAlign;
+        <div class="recording-controls">
+            <button id="startBtn" class="start" onclick="startRecording()">
+                🔴 Start Recording
+            </button>
+            <button id="stopBtn" class="stop" onclick="stopRecording()" disabled>
+                ⏹️ Stop & Upload
+            </button>
+        </div>
 
-      const arrayBuffer = new ArrayBuffer(44 + byteLength);
-      const view = new DataView(arrayBuffer);
+        <div class="status" id="status">
+            Ready to record your voice authentication
+        </div>
 
-      const writeString = (offset, string) => {
-        for (let i = 0; i < string.length; i++) {
-          view.setUint8(offset + i, string.charCodeAt(i));
+        <div class="instructions">
+            <h4>📋 Instructions:</h4>
+            <ul>
+                <li>Click "Start Recording" to begin</li>
+                <li>Speak clearly for 3-5 seconds</li>
+                <li>Click "Stop & Upload" when finished</li>
+                <li>Your voice will be processed automatically</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let audioContext;
+        let stream;
+        const username = document.getElementById('username').textContent;
+
+        function updateStatus(message, isError = false) {
+            const statusEl = document.getElementById('status');
+            statusEl.innerHTML = isError ? `❌ ${message}` : `✅ ${message}`;
         }
-      };
 
-      writeString(0, 'RIFF');
-      view.setUint32(4, 36 + byteLength, true);
-      writeString(8, 'WAVE');
-      writeString(12, 'fmt ');
-      view.setUint32(16, 16, true);
-      view.setUint16(20, 1, true);
-      view.setUint16(22, numChannels, true);
-      view.setUint32(24, sampleRate, true);
-      view.setUint32(28, byteRate, true);
-      view.setUint16(32, blockAlign, true);
-      view.setUint16(34, 16, true);
-      writeString(36, 'data');
-      view.setUint32(40, byteLength, true);
+        function audioBufferToWav(buffer) {
+            const numChannels = buffer.numberOfChannels;
+            const sampleRate = buffer.sampleRate;
+            const samples = buffer.getChannelData(0).length;
+            const bytesPerSample = 2;
+            const blockAlign = numChannels * bytesPerSample;
+            const byteRate = sampleRate * blockAlign;
+            const byteLength = samples * blockAlign;
+            const arrayBuffer = new ArrayBuffer(44 + byteLength);
+            const view = new DataView(arrayBuffer);
 
-      let offset = 44;
-      for (let i = 0; i < samples; i++) {
-        for (let channel = 0; channel < numChannels; channel++) {
-          const sample = buffer.getChannelData(channel)[i];
-          const clamped = Math.max(-1, Math.min(1, sample));
-          const int16 = clamped < 0 ? clamped * 0x8000 : clamped * 0x7FFF;
-          view.setInt16(offset, int16, true);
-          offset += 2;
-        }
-      }
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
 
-      return arrayBuffer;
-    }
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + byteLength, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, byteLength, true);
 
-    async function startRecording() {
-      try {
-        stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        audioContext = new AudioContext();
-        const source = audioContext.createMediaStreamSource(stream);
-        mediaRecorder = new MediaRecorder(stream);
-        audioChunks = [];
-
-        mediaRecorder.ondataavailable = event => {
-          audioChunks.push(event.data);
-        };
-
-        mediaRecorder.onstop = async () => {
-          document.getElementById('status').textContent = '🔄 Converting to WAV...';
-
-          try {
-            const blob = new Blob(audioChunks, { type: 'audio/webm' });
-            const arrayBuffer = await blob.arrayBuffer();
-            const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-            const wavArrayBuffer = audioBufferToWav(audioBuffer);
-            const wavBlob = new Blob([wavArrayBuffer], { type: 'audio/wav' });
-
-            const formData = new FormData();
-            formData.append('audio_data', wavBlob, 'predictvoice.wav');
-
-            document.getElementById('status').textContent = '⏳ Uploading...';
-
-            const response = await fetch(`/upload_audio/${username}`, {
-              method: 'POST',
-              body: formData
-            });
-
-            if (response.ok) {
-              window.location.href = `/predict/${username}`;
-            } else {
-              document.getElementById('status').textContent = '❌ Upload failed.';
+            let offset = 44;
+            for (let i = 0; i < samples; i++) {
+                for (let channel = 0; channel < numChannels; channel++) {
+                    const sample = buffer.getChannelData(channel)[i];
+                    const clamped = Math.max(-1, Math.min(1, sample));
+                    const int16 = clamped < 0 ? clamped * 0x8000 : clamped * 0x7FFF;
+                    view.setInt16(offset, int16, true);
+                    offset += 2;
+                }
             }
 
-          } catch (err) {
-            console.error('Conversion/upload error:', err);
-            document.getElementById('status').textContent = '❌ Conversion or upload failed.';
-          }
+            return arrayBuffer;
+        }
 
-          stream.getTracks().forEach(track => track.stop());
-          document.getElementById('startBtn').disabled = false;
-          document.getElementById('stopBtn').disabled = true;
-        };
+        async function startRecording() {
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                audioContext = new AudioContext();
+                const source = audioContext.createMediaStreamSource(stream);
+                
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
 
-        mediaRecorder.start();
-        document.getElementById('status').textContent = '🎙️ Recording...';
-        document.getElementById('startBtn').disabled = true;
-        document.getElementById('stopBtn').disabled = false;
+                mediaRecorder.ondataavailable = event => {
+                    audioChunks.push(event.data);
+                };
 
-      } catch (err) {
-        console.error('Microphone access error:', err);
-        document.getElementById('status').textContent = '❌ Could not access microphone.';
-      }
-    }
+                mediaRecorder.onstop = async () => {
+                    // Hide recording indicators
+                    document.getElementById('recordingIndicator').classList.remove('active');
+                    document.getElementById('audioVisualizer').classList.remove('active');
+                    
+                    updateStatus('🔄 Converting to WAV format...');
+                    
+                    try {
+                        const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                        const arrayBuffer = await blob.arrayBuffer();
+                        const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+                        const wavArrayBuffer = audioBufferToWav(audioBuffer);
+                        const wavBlob = new Blob([wavArrayBuffer], { type: 'audio/wav' });
 
-    function stopRecording() {
-      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-        mediaRecorder.stop();
-        document.getElementById('status').textContent = '⏳ Finalizing...';
-      }
-    }
-  </script>
+                        const formData = new FormData();
+                        formData.append('audio_data', wavBlob, 'predictvoice.wav');
+
+                        updateStatus('⏳ Uploading voice data...');
+
+                        const response = await fetch(`/upload_audio/${username}`, {
+                            method: 'POST',
+                            body: formData
+                        });
+
+                        if (response.ok) {
+                            updateStatus('🎉 Upload successful! Redirecting...');
+                            setTimeout(() => {
+                                window.location.href = `/predict/${username}`;
+                            }, 1500);
+                        } else {
+                            updateStatus('Upload failed. Please try again.', true);
+                        }
+                    } catch (err) {
+                        console.error('Conversion/upload error:', err);
+                        updateStatus('Conversion or upload failed. Please try again.', true);
+                    }
+
+                    // Clean up
+                    stream.getTracks().forEach(track => track.stop());
+                    document.getElementById('startBtn').disabled = false;
+                    document.getElementById('stopBtn').disabled = true;
+                };
+
+                mediaRecorder.start();
+                
+                // Show recording indicators
+                document.getElementById('recordingIndicator').classList.add('active');
+                document.getElementById('audioVisualizer').classList.add('active');
+                
+                updateStatus('🎙️ Recording your voice...');
+                document.getElementById('startBtn').disabled = true;
+                document.getElementById('stopBtn').disabled = false;
+
+            } catch (err) {
+                console.error('Microphone access error:', err);
+                updateStatus('Could not access microphone. Please check permissions.', true);
+            }
+        }
+
+        function stopRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+                updateStatus('⏳ Processing recording...');
+            }
+        }
+
+        // Initialize page
+        window.addEventListener('load', function() {
+            updateStatus('Ready to record your voice authentication');
+        });
+    </script>
 </body>
 </html>

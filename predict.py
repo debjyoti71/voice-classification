@@ -27,7 +27,7 @@ class VoicePredict:
 
         if not os.path.exists(model_path) or not os.path.exists(scaler_path):
             print(f"❌ Model or scaler for label '{label}' not found.")
-            return
+            return None, False
 
         # Load trained model and scaler
         model = joblib.load(model_path)
@@ -55,27 +55,35 @@ class VoicePredict:
         top_conf = summary.max()
 
         transcribed_text = self.convert_audio_to_text()
+        sentence_match = False
+
         if transcribed_text:
             print(f"🗣️ You said: \"{transcribed_text}\"")
             if transcribed_text.strip() == self.sentence.strip():
+                sentence_match = True
                 print(f"\n🎉 Welcome, {top_label.capitalize()}! (Avg confidence: {top_conf:.2f})")
             else:
                 print(f"\n🛑 Text mismatch. Expected: \"{self.sentence.strip()}\"")
         else:
             print("\n❗ Could not transcribe voice to text.")
 
-        return self.df
+        return self.df, sentence_match
+
 
 
 # Usage Example
 if __name__ == "__main__":
-    label_to_predict = "avra"  # Replace with the actual label you want to predict
+    label_to_predict = "debjyoti"  # Replace with the actual label you want to predict
     csv_path = f'temp/{label_to_predict}_features.csv'
     sentence = "hello world"  # Expected sentence to match
     if os.path.exists(csv_path):
         df = pd.read_csv(csv_path)
         df = df.dropna().reset_index(drop=True)
         predictor = VoicePredict(df, sentence)
-        predicted_df = predictor.predict(label_to_predict)
+        predicted_df, sentence_matched = predictor.predict(label_to_predict)
+        if sentence_matched:
+            print("✅ Sentence matched correctly.")
+        else:
+            print("❌ Sentence did not match.")
     else:
         print(f"❌ Feature CSV not found at: {csv_path}")

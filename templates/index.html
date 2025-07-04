@@ -1,14 +1,331 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Enter User Info</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+            width: 100%;
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .form-row {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        label {
+            min-width: 60px;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        input {
+            flex: 1;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 16px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+            transform: translateY(-1px);
+            transition: all 0.3s ease;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .status {
+            text-align: center;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .voice-commands {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .voice-commands h4 {
+            margin-bottom: 8px;
+            color: #ffd700;
+            font-size: 14px;
+        }
+
+        .voice-commands ul {
+            list-style: none;
+        }
+
+        .voice-commands li {
+            margin: 3px 0;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .voice-commands li:before {
+            content: "🎤";
+            position: absolute;
+            left: 0;
+            font-size: 10px;
+        }
+
+        .wave {
+            display: inline-block;
+            animation: wave 2s infinite;
+        }
+
+        @keyframes wave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        .listening-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #ff4757;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            animation: pulse 1.5s infinite;
+            display: none;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
 </head>
 <body>
-    <h2>🔐 Voice Login</h2>
-    <form method="POST">
-        Name: <input type="text" name="username" required><br><br>
-        Email: <input type="email" name="email"><br><br>
-        <button type="submit">Continue</button>
-    </form>
+    <div class="listening-indicator" id="listeningIndicator">
+        🎤 Listening...
+    </div>
+
+    <div class="container">
+        <h2>🔐 Voice Login <span class="wave">🎤</span></h2>
+        
+        <form method="POST" id="voiceForm">
+            <div class="form-row">
+                <label>Name:</label>
+                <input type="text" name="username" id="username" placeholder="Type or speak your name" required>
+            </div>
+
+            <div class="form-row">
+                <label>Email:</label>
+                <input type="email" name="email" id="email" placeholder="Type or speak your email">
+            </div>
+
+            <button type="submit">Continue</button>
+        </form>
+
+        <div class="status" id="status">
+            🎯 Just start speaking! Say your name and email, or use voice commands
+        </div>
+
+        <div class="voice-commands">
+            <h4>🗣️ Voice Commands:</h4>
+            <ul>
+                <li>"My name is [your name]"</li>
+                <li>"My email is [your email]"</li>
+                <li>"Submit form" or "Continue"</li>
+                <li>"Clear name" or "Clear email"</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Check for speech recognition support
+        if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+            document.getElementById('status').innerHTML = '❌ Voice features not supported in this browser';
+        }
+
+        // Initialize Speech Recognition
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.lang = 'en-US';
+
+        // Update status (NO VOICE OUTPUT)
+        function updateStatus(message) {
+            document.getElementById('status').innerHTML = `✅ ${message}`;
+            // Removed all speech synthesis code
+        }
+
+        // Show/hide listening indicator
+        function showListening(show) {
+            const indicator = document.getElementById('listeningIndicator');
+            indicator.style.display = show ? 'block' : 'none';
+        }
+
+        // Process voice commands and input
+        function processVoiceInput(transcript) {
+            const text = transcript.toLowerCase().trim();
+            
+            // Name input
+            if (text.includes('my name is') || text.includes('name is')) {
+                const nameMatch = text.match(/(?:my\s+)?name\s+is\s+(.+?)(?:\s+my\s+email|\s+email|$)/i);
+                if (nameMatch) {
+                    const name = nameMatch[1].trim();
+                    document.getElementById('username').value = name;
+                    updateStatus(`Name set to: ${name}`);
+                }
+            }
+            
+            // Email input
+            if (text.includes('my email is') || text.includes('email is')) {
+                const emailMatch = text.match(/(?:my\s+)?email\s+is\s+(.+?)(?:\s+my\s+name|\s+name|$)/i);
+                if (emailMatch) {
+                    let email = emailMatch[1].trim()
+                        .replace(/\s+at\s+/g, '@')
+                        .replace(/\s+dot\s+/g, '.')
+                        .replace(/\s+/g, '');
+                    document.getElementById('email').value = email;
+                    updateStatus(`Email set to: ${email}`);
+                }
+            }
+            
+            // Commands
+            if (text.includes('submit') || text.includes('continue')) {
+                document.getElementById('voiceForm').submit();
+            } else if (text.includes('clear name')) {
+                document.getElementById('username').value = '';
+                updateStatus('Name cleared');
+            } else if (text.includes('clear email')) {
+                document.getElementById('email').value = '';
+                updateStatus('Email cleared');
+            }
+        }
+
+        // Handle speech recognition results
+        recognition.onresult = function(event) {
+            let finalTranscript = '';
+            
+            for (let i = event.resultIndex; i < event.results.length; i++) {
+                if (event.results[i].isFinal) {
+                    finalTranscript += event.results[i][0].transcript;
+                }
+            }
+            
+            if (finalTranscript) {
+                processVoiceInput(finalTranscript);
+            }
+        };
+
+        recognition.onstart = function() {
+            showListening(true);
+        };
+
+        recognition.onend = function() {
+            showListening(false);
+            // Restart recognition automatically
+            setTimeout(() => {
+                try {
+                    recognition.start();
+                } catch (e) {
+                    // Ignore errors when restarting
+                }
+            }, 1000);
+        };
+
+        recognition.onerror = function(event) {
+            showListening(false);
+            if (event.error !== 'no-speech') {
+                updateStatus(`Voice error: ${event.error}`);
+            }
+        };
+
+        // Start continuous voice recognition
+        try {
+            recognition.start();
+        } catch (e) {
+            updateStatus('Could not start voice recognition');
+        }
+
+        // Form submission (NO VOICE OUTPUT)
+        document.getElementById('voiceForm').addEventListener('submit', function(e) {
+            // Removed all speech synthesis code
+            // Form will submit normally with POST method
+        });
+
+        // Welcome message (NO VOICE OUTPUT)
+        setTimeout(() => {
+            updateStatus('Voice login ready! Just start speaking naturally');
+        }, 1000);
+    </script>
 </body>
 </html>
