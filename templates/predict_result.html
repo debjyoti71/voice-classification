@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Prediction Result</title>
+</head>
+<body>
+    <h2>🔍 Prediction for {{ username }}</h2>
+
+    {% if result %}
+        <p>{{ result }}</p>
+    {% else %}
+        <p><strong>Predicted Label:</strong> {{ predicted_label }}</p>
+        <p><strong>Confidence:</strong> {{ confidence }}%</p>
+        {% if match %}
+            <p style="color:green;">✅ Match confirmed!</p>
+        {% else %}
+            <p style="color:red;">❌ Voice doesn't match the username!</p>
+        {% endif %}
+    {% endif %}
+
+    <a href="/">🔙 Try Again</a>
+</body>
+</html>

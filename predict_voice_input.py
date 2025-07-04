@@ -8,7 +8,7 @@ from predict import VoicePredict
 
 class VoiceAuthenticator:
     print("🔒 Voice Authenticator Initialized")
-    def __init__(self, sentence="open the door", file_path="predictvoice.wav", duration=5, rate=22050, channels=1):
+    def __init__(self, sentence="hello world", file_path="predictvoice.wav", duration=5, rate=22050, channels=1):
         self.sentence = sentence.lower()
         self.file_path = file_path
         self.duration = duration
@@ -61,7 +61,7 @@ class VoiceAuthenticator:
                 df = pd.DataFrame(feature)
                 df.to_csv("data/audio_features_for_predict.csv", index=False)
                 print("📁 Features saved to 'audio_features_for_predict.csv'")
-                predictor = VoicePredict(df)
+                predictor = VoicePredict(df, self.sentence)
                 # label_to_predict = label_to_predict  # Replace with the actual label you want to predict
                 predicted_df = predictor.predict(label_to_predict)
             else:

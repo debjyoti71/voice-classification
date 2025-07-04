@@ -73,7 +73,7 @@ class AudioFeatureExtractor:
             features["Condition"] = condition
 
             self.data.append(features)
-            print(f"✅ Extracted features for condition: {condition}")
+            print(f"✅ Extracted features for condition: {condition}")    
 
         return self.data
 
@@ -87,6 +87,6 @@ if __name__ == "__main__":
     afe = AudioFeatureExtractor(file_path)
     features = afe.extract_formants(label)
     df = pd.DataFrame(features)
-    df.to_csv("audio_features_for_predict.csv", index=False)
+    df.to_csv("data/audio_features_for_predict.csv", index=False)
     print("📁 Features saved to audio_features_for_predict.csv")
     print(df)

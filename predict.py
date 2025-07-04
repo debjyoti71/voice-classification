@@ -1,53 +1,81 @@
 import pandas as pd
+import speech_recognition as sr
 import joblib
 import os
+from sklearn.preprocessing import StandardScaler
 
 class VoicePredict:
-    def __init__(self, dataframe):
+    def __init__(self, dataframe, sentence):
         self.df = dataframe
+        self.sentence = sentence.lower()
+        self.file_path = "predictvoice.wav"
+
+    def convert_audio_to_text(self):
+        recognizer = sr.Recognizer()
+        with sr.AudioFile(self.file_path) as source:
+            audio = recognizer.record(source)
+            try:
+                return recognizer.recognize_google(audio).lower()
+            except (sr.UnknownValueError, sr.RequestError):
+                return None    
 
     def predict(self, label):
         model_path = f"models/{label}_voice_model.pkl"
-        print(f"🔍 Loading model from {model_path} for label '{label}'...")
-        if not os.path.exists(model_path):
-            print(f"❌ Model for label '{label}' not found at {model_path}")
+        scaler_path = f"models/{label}_scaler.pkl"
+
+        print(f"🔍 Loading model from {model_path} and scaler from {scaler_path} for label '{label}'...")
+
+        if not os.path.exists(model_path) or not os.path.exists(scaler_path):
+            print(f"❌ Model or scaler for label '{label}' not found.")
             return
 
-        # Load the trained model
+        # Load trained model and scaler
         model = joblib.load(model_path)
+        scaler = joblib.load(scaler_path)
 
-        # Drop non-feature columns if present
+        # Prepare features
         features_df = self.df.drop(columns=[col for col in ['Label', 'Condition'] if col in self.df.columns])
+        features_scaled = scaler.transform(features_df)
 
-        # Make predictions with probabilities
-        predictions = model.predict(features_df)
-        probabilities = model.predict_proba(features_df)
-
-        # Get the confidence (max probability) for each prediction
+        # Predict
+        predictions = model.predict(features_scaled)
+        probabilities = model.predict_proba(features_scaled)
         confidence_scores = probabilities.max(axis=1)
 
-        # Append results to the DataFrame
+        # Append prediction results
         self.df['Predicted_Label'] = predictions
         self.df['Confidence'] = confidence_scores
 
         print("\n🔍 Prediction Results with Confidence:")
         print(self.df[['Predicted_Label', 'Confidence']])
 
-         # 👉 Get the label with highest average confidence
+        # Get label with highest average confidence
         summary = self.df.groupby('Predicted_Label')['Confidence'].mean()
         top_label = summary.idxmax()
         top_conf = summary.max()
 
-        print(f"\n🎉 Welcome, {top_label.capitalize()}! (Avg confidence: {top_conf:.2f})")
+        transcribed_text = self.convert_audio_to_text()
+        if transcribed_text:
+            print(f"🗣️ You said: \"{transcribed_text}\"")
+            if transcribed_text.strip() == self.sentence.strip():
+                print(f"\n🎉 Welcome, {top_label.capitalize()}! (Avg confidence: {top_conf:.2f})")
+            else:
+                print(f"\n🛑 Text mismatch. Expected: \"{self.sentence.strip()}\"")
+        else:
+            print("\n❗ Could not transcribe voice to text.")
+
         return self.df
-    
 
 
 # Usage Example
 if __name__ == "__main__":
-    csv_path = 'audio_features_for_predict.csv'
-    df = pd.read_csv(csv_path)
-    
-    predictor = VoicePredict(df)
-    label_to_predict = "debjyoti"
-    predicted_df = predictor.predict(label_to_predict)
+    label_to_predict = "avra"  # Replace with the actual label you want to predict
+    csv_path = f'temp/{label_to_predict}_features.csv'
+    sentence = "hello world"  # Expected sentence to match
+    if os.path.exists(csv_path):
+        df = pd.read_csv(csv_path)
+        df = df.dropna().reset_index(drop=True)
+        predictor = VoicePredict(df, sentence)
+        predicted_df = predictor.predict(label_to_predict)
+    else:
+        print(f"❌ Feature CSV not found at: {csv_path}")
