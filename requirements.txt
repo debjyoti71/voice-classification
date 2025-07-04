@@ -1,0 +1,14 @@
+Flask
+pandas
+joblib
+SpeechRecognition
+scikit-learn
+numpy
+pyaudio
+scipy
+requests
+scipy.signal
+librosa
+soundfile
+scikit-learn
+scipy.io.wavfile

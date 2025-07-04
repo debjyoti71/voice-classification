@@ -1,4 +1,5 @@
 c:/Users/Debjyoti/Desktop/my_projects/voice_classification/
+├── app.py
 ├── data/
 │   ├── audio_features.csv
 │   ├── audio_features_for_predict.csv
@@ -17,9 +18,18 @@ c:/Users/Debjyoti/Desktop/my_projects/voice_classification/
 ├── predictvoice.wav
 ├── predict_voice_input.py
 ├── README.md
+├── temp/
+│   ├── avra_features.csv
+│   ├── debjyoti_features.csv
+│   └── deb_features.csv
+├── templates/
+│   ├── index.html
+│   ├── predict_result.html
+│   └── record.html
 ├── test_data_extract.py
 ├── train.py
 ├── train_data_extract.py
+├── vercel.json
 ├── voice_samples/
 │   ├── Actor_01/
 │   ├── avra/
