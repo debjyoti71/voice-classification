@@ -1,4 +1,4 @@
-c:/Users/Debjyoti/Desktop/my_projects/voice_classification/
+my_projects/voice_classification/
 ├── app.py
 ├── data/
 │   ├── audio_features.csv
