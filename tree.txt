@@ -13,10 +13,7 @@ c:/Users/Debjyoti/Desktop/my_projects/voice_classification/
 │   ├── deb_voice_model.pkl
 │   ├── indrajit_voice_model.pkl
 │   └── milan_voice_model.pkl
-├── new_voice_input.py
-├── predict.py
 ├── predictvoice.wav
-├── predict_voice_input.py
 ├── README.md
 ├── temp/
 │   ├── avra_features.csv
@@ -26,10 +23,15 @@ c:/Users/Debjyoti/Desktop/my_projects/voice_classification/
 │   ├── index.html
 │   ├── predict_result.html
 │   └── record.html
-├── test_data_extract.py
-├── train.py
-├── train_data_extract.py
 ├── vercel.json
+├── VoiceClassification/
+│   ├── new_voice_input.py
+│   ├── predict.py
+│   ├── predict_voice_input.py
+│   ├── test_data_extract.py
+│   ├── train.py
+│   ├── train_data_extract.py
+│   ├── __init__.py
 ├── voice_samples/
 │   ├── Actor_01/
 │   ├── avra/

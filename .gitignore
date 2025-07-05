@@ -175,6 +175,8 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+myenv
+
 comapre.py
 v1.wav
 v2.wav
