@@ -1,8 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 import os
 import pandas as pd
-from predict import VoicePredict
-from test_data_extract import AudioFeatureExtractor
+from VoiceClassification.predict import VoicePredict
+from VoiceClassification.test_data_extract import AudioFeatureExtractor
 
 app = Flask(__name__)
 

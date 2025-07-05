@@ -3,12 +3,12 @@ import pyaudio
 import wave
 import pandas as pd
 import speech_recognition as sr
-from test_data_extract import AudioFeatureExtractor
-from predict import VoicePredict
+from VoiceClassification.test_data_extract import AudioFeatureExtractor
+from VoiceClassification.predict import VoicePredict
 
 class VoiceAuthenticator:
     print("🔒 Voice Authenticator Initialized")
-    def __init__(self, sentence="hello world", file_path="predictvoice.wav", duration=5, rate=22050, channels=1):
+    def __init__(self, sentence="hello", file_path="predictvoice.wav", duration=5, rate=22050, channels=1):
         self.sentence = sentence.lower()
         self.file_path = file_path
         self.duration = duration

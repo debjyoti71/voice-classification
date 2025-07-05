@@ -3,7 +3,7 @@ import wave
 import pyaudio
 import pandas as pd
 import speech_recognition as sr
-from train_data_extract import AudioFeatureExtractor
+from VoiceClassification.train_data_extract import AudioFeatureExtractor
 
 VOICE_DATA_DIR = "voice_samples"
 SPLIT_SENTENCES = [

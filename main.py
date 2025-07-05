@@ -1,8 +1,8 @@
 import pandas as pd
 
-from new_voice_input import VoiceSampleCollector
-from train import VoiceTrainer
-from predict_voice_input import VoiceAuthenticator
+from VoiceClassification.new_voice_input import VoiceSampleCollector
+from VoiceClassification.train import VoiceTrainer
+from VoiceClassification.predict_voice_input import VoiceAuthenticator
 
 def new_entry():
     name_input = input("Enter name: ")
